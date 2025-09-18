@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 
 /**
  * Highways & Hospitals
@@ -11,47 +10,42 @@ import java.util.ArrayList;
  */
 
 public class HighwaysAndHospitals {
-
-    /**
-     * TODO: Complete this function, cost(), to return the minimum cost to provide
-     *  hospital access for all citizens in Menlo County.
-     */
     public static long cost(int n, int hospitalCost, int highwayCost, int cities[][]) {
-        int cost = 0;
-        ArrayList<Integer> connected = new ArrayList<Integer>();
+        long cost = 0;
+        int highwayCount = 0;
+        int hospitalCount = 0;
+        int[] roots = new int[n + 1];
 
         // Create arraylist to keep track of hospitals
-        ArrayList<Integer> hospitals = new ArrayList<Integer>();
-        hospitals.add(1);
-        for (int i = 2; i < n + 1; i++) {
-            int cityConnections = findConnections(i, cities);
-            if (connected.contains(i)) {
-                continue;
+        for (int i = 0; i < cities.length; i++) {
+            int firstCity = cities[i][0];
+            int connectedCity = cities[i][1];
+            int firstCityRoot = findRoot(roots, firstCity);
+            int connectedCityRoot = findRoot(roots, connectedCity);
+            if (firstCityRoot != connectedCityRoot) {
+                roots[connectedCityRoot] = firstCityRoot;
             }
-            else {
-
-            }
-            connected.add(cityConnections);
         }
-
+        hospitalCount = findRootsCount(roots);
+        highwayCount = n - hospitalCount;
+        cost = (long) hospitalCount * hospitalCost + (long) highwayCount * highwayCost;
         return cost;
     }
 
-    public static int findConnections(int city,int cities[][]) {
-        int connections = 0;
-        for (int i = 0; i < cities.length; i++) {
-            if (cities[i][0] == city || cities[i][1] == city) {
-                connections++;
+    public static int findRoot(int[] roots, int city) {
+        if (roots[city] == 0) {
+            return city;
+        }
+        roots[city] = findRoot(roots, roots[city]);
+        return roots[city];
+    }
+    public static int findRootsCount(int[] roots) {
+        int count = 0;
+        for (int i = 1; i < roots.length; i++) {
+            if (roots[i] == 0) {
+                count++;
             }
         }
-        return connections;
-    }
-
-    public static int findMostConnections(ArrayList<Integer> connections) {
-        int city = 0;
-        for (int i = 0; i < connections.size(); i++) {
-
-        }
-        return city;
+        return count;
     }
 }
