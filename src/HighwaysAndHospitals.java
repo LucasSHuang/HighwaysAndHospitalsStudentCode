@@ -16,6 +16,10 @@ public class HighwaysAndHospitals {
         int hospitalCount = 0;
         int[] roots = new int[n + 1];
 
+        for (int i = 1; i < roots.length; i++) {
+            roots[i] = i;
+        }
+
         // Create arraylist to keep track of hospitals
         for (int i = 0; i < cities.length; i++) {
             int firstCity = cities[i][0];
@@ -27,13 +31,12 @@ public class HighwaysAndHospitals {
             }
         }
         hospitalCount = findRootsCount(roots);
-        highwayCount = n - hospitalCount;
         cost = (long) hospitalCount * hospitalCost + (long) highwayCount * highwayCost;
         return cost;
     }
 
     public static int findRoot(int[] roots, int city) {
-        if (roots[city] == 0) {
+        if (roots[city] == city) {
             return city;
         }
         roots[city] = findRoot(roots, roots[city]);
@@ -42,7 +45,7 @@ public class HighwaysAndHospitals {
     public static int findRootsCount(int[] roots) {
         int count = 0;
         for (int i = 1; i < roots.length; i++) {
-            if (roots[i] == 0) {
+            if (roots[i] == i) {
                 count++;
             }
         }
