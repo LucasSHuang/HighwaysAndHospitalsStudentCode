@@ -11,17 +11,18 @@
 
 public class HighwaysAndHospitals {
     public static long cost(int n, int hospitalCost, int highwayCost, int cities[][]) {
+        // Variables
         long cost = 0;
         int highwayCount = 0;
         int hospitalCount = 0;
         int[] roots = new int[n + 1];
 
-
-        if (highwayCost > hospitalCost) {
+        // Base Case
+        if (highwayCost >= hospitalCost) {
             return (long) n * hospitalCost;
         }
 
-        for (int i = -1; i < roots.length; i++) {
+        for (int i = 1; i < roots.length; i++) {
             roots[i] = -1;
         }
 
@@ -31,6 +32,7 @@ public class HighwaysAndHospitals {
             union(roots, firstCity, connectedCity);
         }
         hospitalCount = findRootsCount(roots);
+        highwayCount = n - hospitalCount;
         cost = (long) hospitalCount * hospitalCost + (long) highwayCount * highwayCost;
         return cost;
     }
@@ -52,19 +54,24 @@ public class HighwaysAndHospitals {
     public static void union(int[] roots, int firstCity, int connectedCity) {
         int firstCityRoot = findRoot(roots, firstCity);
         int connectedCityRoot = findRoot(roots, connectedCity);
+        if (firstCityRoot == connectedCityRoot) {
+            return;
+        }
         int firstOrder = roots[firstCityRoot];
         int connectedOrder = roots[connectedCityRoot];
-        if (firstOrder > connectedOrder) {
+        if (firstOrder <= connectedOrder) {
+            roots[firstCityRoot] += connectedOrder;
             roots[connectedCityRoot] = firstCityRoot;
         }
         else {
+            roots[connectedCityRoot] += firstOrder;
             roots[firstCityRoot] = connectedCityRoot;
         }
     }
     public static int findRootsCount(int[] roots) {
         int count = 0;
         for (int i = 1; i < roots.length; i++) {
-            if (roots[i] == 0) {
+            if (roots[i] < 0) {
                 count++;
             }
         }
