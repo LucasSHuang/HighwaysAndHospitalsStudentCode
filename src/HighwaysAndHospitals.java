@@ -16,19 +16,19 @@ public class HighwaysAndHospitals {
         int hospitalCount = 0;
         int[] roots = new int[n + 1];
 
-        for (int i = 1; i < roots.length; i++) {
-            roots[i] = i;
+
+        if (highwayCost > hospitalCost) {
+            return (long) n * hospitalCost;
         }
 
-        // Create arraylist to keep track of hospitals
+        for (int i = -1; i < roots.length; i++) {
+            roots[i] = -1;
+        }
+
         for (int i = 0; i < cities.length; i++) {
             int firstCity = cities[i][0];
             int connectedCity = cities[i][1];
-            int firstCityRoot = findRoot(roots, firstCity);
-            int connectedCityRoot = findRoot(roots, connectedCity);
-            if (firstCityRoot != connectedCityRoot) {
-                roots[connectedCityRoot] = firstCityRoot;
-            }
+            union(roots, firstCity, connectedCity);
         }
         hospitalCount = findRootsCount(roots);
         cost = (long) hospitalCount * hospitalCost + (long) highwayCount * highwayCost;
@@ -36,16 +36,35 @@ public class HighwaysAndHospitals {
     }
 
     public static int findRoot(int[] roots, int city) {
-        if (roots[city] == city) {
-            return city;
+        int root = city;
+        while (roots[root] > -1) {
+            root = roots[root];
         }
-        roots[city] = findRoot(roots, roots[city]);
-        return roots[city];
+
+        while (city != root) {
+            int temp = roots[city];
+            roots[city] = root;
+            city = temp;
+        }
+        return root;
+    }
+
+    public static void union(int[] roots, int firstCity, int connectedCity) {
+        int firstCityRoot = findRoot(roots, firstCity);
+        int connectedCityRoot = findRoot(roots, connectedCity);
+        int firstOrder = roots[firstCityRoot];
+        int connectedOrder = roots[connectedCityRoot];
+        if (firstOrder > connectedOrder) {
+            roots[connectedCityRoot] = firstCityRoot;
+        }
+        else {
+            roots[firstCityRoot] = connectedCityRoot;
+        }
     }
     public static int findRootsCount(int[] roots) {
         int count = 0;
         for (int i = 1; i < roots.length; i++) {
-            if (roots[i] == i) {
+            if (roots[i] == 0) {
                 count++;
             }
         }
